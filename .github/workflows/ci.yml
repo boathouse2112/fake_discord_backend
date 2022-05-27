@@ -1,0 +1,44 @@
+name: run integration testing
+
+on:
+  push:
+    branches:
+
+  pull_request:
+    branches: [main]
+
+jobs:
+  integration-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:12-alpine
+        env:
+          POSTGRES_USER: localUser
+          POSTGRES_PASSWORD: localPassword
+          POSTGRES_DB: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js v16
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Unit testing
+        run: npm test
+      - name: Integration testing
+        run: |
+          npx prisma db push
+          npm run test:integration
+        env:
+          DATABASE_URL: postgresql://localUser:localPassword@localhost:5432/test
