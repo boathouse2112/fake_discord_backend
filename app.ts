@@ -6,6 +6,7 @@ import express from 'express';
 import logger from 'morgan';
 import path from 'path';
 
+import chatRouter from './routes/chat.js';
 import indexRouter from './routes/index.js';
 import usersRouter from './routes/users.js';
 
@@ -18,6 +19,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/chat', chatRouter);
 app.use('/users', usersRouter);
 
 export default app;
