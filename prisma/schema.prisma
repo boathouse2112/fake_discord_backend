@@ -8,17 +8,22 @@ datasource db {
 }
 
 model User {
-    id    Int     @id @default(autoincrement())
-    email String  @unique
-    name  String?
-    posts Post[]
+    id           String  @id @default(uuid())
+    username     String  @unique
+    avatarURL    String?
+    aboutMe      String
+    profileColor String
+    chats        Chat[]
 }
 
-model Post {
-    id        Int     @id @default(autoincrement())
-    title     String
-    content   String?
-    published Boolean @default(false)
-    author    User?   @relation(fields: [authorId], references: [id])
-    authorId  Int?
+model Chat {
+    id       String    @id @default(uuid())
+    users    User[]
+    messages Message[]
+}
+
+model Message {
+    id     String @id @default(uuid())
+    chat   Chat   @relation(fields: [chatId], references: [id])
+    chatId String
 }
